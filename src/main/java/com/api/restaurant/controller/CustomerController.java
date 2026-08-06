@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/customers")
+@RequestMapping("/api/v1/customers")
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -72,7 +72,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/{customerId}/change-password")
-    public ResponseEntity<ResponseBodyCustomerDTO> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
+    public ResponseEntity<Void> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
         try {
             customerService.editCustomerPassword(customerId, dto);
             return ResponseEntity.ok().build();

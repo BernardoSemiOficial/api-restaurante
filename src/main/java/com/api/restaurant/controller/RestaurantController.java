@@ -1,9 +1,6 @@
 package com.api.restaurant.controller;
 
-import com.api.restaurant.interfaces.CreateRequestBodyCustomerDTO;
-import com.api.restaurant.interfaces.CreateRequestBodyRestaurantDTO;
-import com.api.restaurant.interfaces.ResponseBodyCustomerDTO;
-import com.api.restaurant.interfaces.ResponseBodyRestaurantDTO;
+import com.api.restaurant.interfaces.*;
 import com.api.restaurant.model.Customer;
 import com.api.restaurant.model.Restaurant;
 import com.api.restaurant.repository.CustomerRepository;
@@ -16,9 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/restaurants")
+@RequestMapping("/api/v1/restaurants")
 public class RestaurantController {
 
     private final CustomerService customerService;
@@ -29,10 +27,9 @@ public class RestaurantController {
         this.restaurantService = restaurantService;
     }
 
-    // RESTAURANTE
     @GetMapping()
-    public ResponseEntity<List<ResponseBodyRestaurantDTO>> getRestaurants() {
-        List<ResponseBodyRestaurantDTO> restaurants = this.restaurantService.getRestaurants();
+    public ResponseEntity<List<ResponseBodyRestaurantDTO>> getRestaurants(@RequestParam String restaurantName) {
+        List<ResponseBodyRestaurantDTO> restaurants = this.restaurantService.getRestaurants(restaurantName);
         return ResponseEntity.ok().body(restaurants);
     }
 
@@ -48,16 +45,38 @@ public class RestaurantController {
     }
 
     @PutMapping("/{restaurantId}")
-    public String putRestaurant(@PathVariable String restaurantId) {
-        return "Restaurante " + restaurantId +" atualizado";
+    public ResponseEntity<ResponseBodyRestaurantDTO> editRestaurant(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantDTO dto) {
+        try {
+            ResponseBodyRestaurantDTO restaurant = restaurantService.editRestaurant(restaurantId, dto);
+            return ResponseEntity.ok().body(restaurant);
+        } catch (Exception error) {
+            error.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+    @PatchMapping("/{restaurantId}/change-password")
+    public ResponseEntity<ResponseBodyRestaurantDTO> editRestaurantPassword(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantPasswordDTO dto) {
+        try {
+            restaurantService.editRestaurantPassword(restaurantId, dto);
+            return ResponseEntity.ok().build();
+        } catch (Exception error) {
+            error.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @DeleteMapping("/{restaurantId}")
-    public String deleteRestaurant(@PathVariable String restaurantId) {
-        return "Restaurante " + restaurantId + " deletado";
+    public ResponseEntity<ResponseBodyRestaurantDTO> deleteRestaurant(@PathVariable Long restaurantId) {
+        try {
+            restaurantService.deleteRestaurant(restaurantId);
+            return ResponseEntity.ok().build();
+        } catch (Exception error) {
+            error.printStackTrace();
+            return ResponseEntity.badRequest().build();
+        }
     }
 
-    // USUÁRIOS DO RESTAURANTE
     @GetMapping("/{restaurantId}/customers")
     public ResponseEntity<List<ResponseBodyCustomerDTO>> getUsersByRestaurant(@PathVariable Long restaurantId) {
         List<ResponseBodyCustomerDTO> customers = customerService.getCustomersByRestaurant(restaurantId);

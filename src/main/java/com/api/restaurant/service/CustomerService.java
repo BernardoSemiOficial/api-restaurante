@@ -9,6 +9,7 @@ import com.api.restaurant.repository.CustomerRepository;
 import com.api.restaurant.repository.RestaurantRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,10 +21,12 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
     private final RestaurantRepository restaurantRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public CustomerService(CustomerRepository customerRepository, RestaurantRepository restaurantRepository) {
+    public CustomerService(CustomerRepository customerRepository, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.restaurantRepository = restaurantRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<ResponseBodyCustomerDTO> getCustomersByRestaurant(Long restaurantId) {
@@ -52,7 +55,9 @@ public class CustomerService {
         user.setName(dto.user().name());
         user.setEmail(dto.user().email());
         user.setLogin(dto.user().login());
-        user.setPassword(dto.user().password());
+
+        String passwordHash = this.passwordEncoder.encode(dto.user().password());
+        user.setPassword(passwordHash);
         user.setUpdatedAt(LocalDateTime.now());
 
         Customer customer = new Customer();
@@ -93,7 +98,9 @@ public class CustomerService {
         user.setName(dto.user().name());
         user.setEmail(dto.user().email());
         user.setLogin(dto.user().login());
-        user.setPassword(dto.user().password());
+
+        String passwordHash = passwordEncoder.encode(dto.user().password());
+        user.setPassword(passwordHash);
         user.setUpdatedAt(LocalDateTime.now());
 
         Customer customer = new Customer();
@@ -142,13 +149,14 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + customerId));
 
         User user = customer.getUser();
-        boolean passwordIsOk = dto.currentPassword().equals(user.getPassword());
+        boolean passwordIsOk = passwordEncoder.matches(dto.currentPassword(), user.getPassword());
 
         if(!passwordIsOk) {
             throw new IllegalArgumentException("A senha atual informada está incorreta.");
         }
 
-        user.setPassword(dto.newPassword());
+        String passwordHash = passwordEncoder.encode(dto.newPassword());
+        user.setPassword(passwordHash);
         user.setUpdatedAt(LocalDateTime.now());
 
         this.customerRepository.save(customer);

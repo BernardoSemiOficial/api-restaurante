@@ -6,4 +6,6 @@ services:
       - 'POSTGRES_PASSWORD=postgres'
       - 'POSTGRES_USER=postgres'
     ports:
-      - '5432:5432'
+      # 5432 está ocupada no host; a app via spring-boot-docker-compose
+      # continua falando com a porta interna 5432 da rede Docker
+      - '5436:5432'

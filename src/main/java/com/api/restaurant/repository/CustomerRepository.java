@@ -14,4 +14,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     public List<Customer> findByRestaurantsId(Long restaurantId);
     public List<Customer> findByUserNameContainingIgnoreCase(String name);
     public Optional<Customer> findByUserLogin(String login);
+    public Optional<Customer> findByUserEmail(String email);
 }

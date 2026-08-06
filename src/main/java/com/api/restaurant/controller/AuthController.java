@@ -21,13 +21,8 @@ public class AuthController {
 
     @PostMapping("login")
     public ResponseEntity<String> login(@RequestBody AuthRequestBodyDTO dto) {
-        try {
-            String auth = this.authService.login(dto);
-            return ResponseEntity.ok().body(auth);
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
+        String auth = this.authService.login(dto);
+        return ResponseEntity.ok(auth);
     }
 
 }

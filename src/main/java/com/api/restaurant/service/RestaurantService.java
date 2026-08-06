@@ -8,6 +8,7 @@ import com.api.restaurant.model.User;
 import com.api.restaurant.repository.RestaurantRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -71,6 +72,9 @@ public class RestaurantService {
         restaurant.setCnpj(dto.cnpj());
         restaurant.setCuisineType(dto.cuisineType());
 
+        this.restaurantRepository.findByUserEmail(dto.user().email())
+                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+
         return this.restaurantRepository.save(restaurant);
     }
 
@@ -101,6 +105,9 @@ public class RestaurantService {
         }
 
         user.setUpdatedAt(LocalDateTime.now());
+
+        this.restaurantRepository.findByUserEmail(dto.user().email())
+                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
 
         Restaurant savedRestaurant = this.restaurantRepository.save(restaurant);
         return new ResponseBodyRestaurantDTO(savedRestaurant);

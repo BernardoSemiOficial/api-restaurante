@@ -7,6 +7,7 @@ import com.api.restaurant.interfaces.ResponseBodyCustomerDTO;
 import com.api.restaurant.model.Customer;
 import com.api.restaurant.service.CustomerService;
 import com.api.restaurant.service.RestaurantService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,70 +29,39 @@ public class CustomerController {
 
     @GetMapping("/{customerId}")
     public ResponseEntity<ResponseBodyCustomerDTO> findCustomer(@PathVariable Long customerId) {
-        try {
-            return customerService.findCustomer(customerId)
-                    .map(value -> ResponseEntity.ok().body(value))
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        return customerService.findCustomer(customerId)
+                .map(value -> ResponseEntity.ok().body(value))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping()
     public ResponseEntity<List<ResponseBodyCustomerDTO>> findCustomer(@RequestParam String customerName) {
-        try {
-             List<ResponseBodyCustomerDTO> customers = customerService.findCustomerByName(customerName);
-             return ResponseEntity.ok().body(customers);
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        List<ResponseBodyCustomerDTO> customers = customerService.findCustomerByName(customerName);
+        return ResponseEntity.ok().body(customers);
     }
 
     @PostMapping()
     public ResponseEntity<ResponseBodyCustomerDTO> createCustomer(@RequestBody CreateRequestBodyCustomerDTO dto) {
-        try {
-            ResponseBodyCustomerDTO customer = customerService.createCustomer(dto);
-            return ResponseEntity.ok().body(customer);
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        ResponseBodyCustomerDTO customer = customerService.createCustomer(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 
     @PutMapping("/{customerId}")
     public ResponseEntity<ResponseBodyCustomerDTO> editCustomer(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerDTO dto) {
-        try {
-            ResponseBodyCustomerDTO customer = customerService.editCustomer(customerId, dto);
-            return ResponseEntity.ok().body(customer);
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        ResponseBodyCustomerDTO customer = customerService.editCustomer(customerId, dto);
+        return ResponseEntity.ok().body(customer);
     }
 
     @PatchMapping("/{customerId}/change-password")
-    public ResponseEntity<Void> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
-        try {
-            customerService.editCustomerPassword(customerId, dto);
-            return ResponseEntity.ok().build();
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ResponseBodyCustomerDTO> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
+        customerService.editCustomerPassword(customerId, dto);
+        return ResponseEntity.ok().build();
     }
 
 
     @DeleteMapping("/{customerId}")
     public ResponseEntity<Void> deleteCustomer(@PathVariable Long customerId) {
-        try {
-            customerService.deleteCustomer(customerId);
-            return ResponseEntity.ok().build();
-        } catch(Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
-
+        customerService.deleteCustomer(customerId);
+        return ResponseEntity.ok().build();
     }
 }

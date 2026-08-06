@@ -35,46 +35,26 @@ public class RestaurantController {
 
     @PostMapping()
     public ResponseEntity<Void> createRestaurant(@RequestBody CreateRequestBodyRestaurantDTO dto) {
-        try {
-            this.restaurantService.createRestaurant(dto);
-            return ResponseEntity.status(HttpStatus.CREATED).build();
-        } catch (Throwable error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        this.restaurantService.createRestaurant(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("/{restaurantId}")
     public ResponseEntity<ResponseBodyRestaurantDTO> editRestaurant(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantDTO dto) {
-        try {
-            ResponseBodyRestaurantDTO restaurant = restaurantService.editRestaurant(restaurantId, dto);
-            return ResponseEntity.ok().body(restaurant);
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        ResponseBodyRestaurantDTO restaurant = restaurantService.editRestaurant(restaurantId, dto);
+        return ResponseEntity.ok().body(restaurant);
     }
 
     @PatchMapping("/{restaurantId}/change-password")
     public ResponseEntity<ResponseBodyRestaurantDTO> editRestaurantPassword(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantPasswordDTO dto) {
-        try {
-            restaurantService.editRestaurantPassword(restaurantId, dto);
-            return ResponseEntity.ok().build();
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        restaurantService.editRestaurantPassword(restaurantId, dto);
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{restaurantId}")
     public ResponseEntity<ResponseBodyRestaurantDTO> deleteRestaurant(@PathVariable Long restaurantId) {
-        try {
-            restaurantService.deleteRestaurant(restaurantId);
-            return ResponseEntity.ok().build();
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+        restaurantService.deleteRestaurant(restaurantId);
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{restaurantId}/customers")
@@ -84,13 +64,8 @@ public class RestaurantController {
     }
 
     @PostMapping("/{restaurantId}/customers")
-    public ResponseEntity<Void> createCustomerToRestaurant(@PathVariable Long restaurantId, @RequestBody CreateRequestBodyCustomerDTO dto) {
-        try {
-            customerService.createCustomerToRestaurant(restaurantId, dto);
-            return ResponseEntity.ok().build();
-        } catch (Exception error) {
-            error.printStackTrace();
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<ResponseBodyCustomerDTO> createCustomerToRestaurant(@PathVariable Long restaurantId, @RequestBody CreateRequestBodyCustomerDTO dto) {
+        ResponseBodyCustomerDTO customer = customerService.createCustomerToRestaurant(restaurantId, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(customer);
     }
 }

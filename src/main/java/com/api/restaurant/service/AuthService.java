@@ -1,5 +1,6 @@
 package com.api.restaurant.service;
 
+import com.api.restaurant.exception.UnauthorizedException;
 import com.api.restaurant.interfaces.AuthRequestBodyDTO;
 import com.api.restaurant.model.Customer;
 import com.api.restaurant.model.Restaurant;
@@ -28,14 +29,14 @@ public class AuthService {
         Optional<Restaurant> restaurant = this.restaurantService.findRestaurant(dto.login());
 
         if(customer.isEmpty() && restaurant.isEmpty()) {
-            throw new EntityNotFoundException("Usuário não encontrado");
+            throw new UnauthorizedException("Usuário não encontrado");
         }
 
         if(customer.isPresent()) {
             User user = customer.get().getUser();
             boolean isValidPassword = passwordEncoder.matches(dto.password(), user.getPassword());
             if(!isValidPassword) {
-                throw new IllegalArgumentException("Não foi possível realizar o login");
+                throw new UnauthorizedException("Não foi possível realizar o login");
             }
             return "Login realizado com sucesso";
         }
@@ -43,7 +44,7 @@ public class AuthService {
         User user = restaurant.get().getUser();
         boolean isValidPassword = passwordEncoder.matches(dto.password(), user.getPassword());
         if(!isValidPassword) {
-            throw new IllegalArgumentException("Não foi possível realizar o login");
+            throw new UnauthorizedException("Não foi possível realizar o login");
         }
         return "Login realizado com sucesso";
     }

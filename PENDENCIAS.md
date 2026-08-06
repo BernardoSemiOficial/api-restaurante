@@ -22,6 +22,8 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 - [x] PostgreSQL + `Dockerfile` + serviço `app` no Compose (profile `full`)
   - Uso: `docker compose --profile full up --build`
 - [x] Documentação Swagger/OpenAPI (SpringDoc): UI em `/swagger-ui/index.html`, controllers e DTOs com exemplos de sucesso/erro
+- [x] README do repositório
+- [x] Relatório técnico em texto (`docs/RELATORIO-TECNICO.md`) — base para o PDF
 
 ---
 
@@ -31,7 +33,7 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Critério | Status |
 |---|---|
-| Backend atende aos requisitos especificados | [x] Em grande parte — faltam itens de entrega (Postman, README, relatório) |
+| Backend atende aos requisitos especificados | [x] Em grande parte — faltam Postman e PDF oficial |
 | Endpoints funcionam com tratamento de erros adequado | [x] `GlobalExceptionHandler` + `ProblemDetail` |
 | Estratégia de versionamento de API | [x] Path `/api/v1/...` |
 | Padrão ProblemDetail (RFC 7807) | [x] |
@@ -101,13 +103,13 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Conteúdo obrigatório do PDF | Status |
 |---|---|
-| Descrição detalhada da arquitetura da aplicação | [ ] **Pendente** |
-| Modelagem das entidades e relacionamentos | [ ] **Pendente** |
-| Descrição dos endpoints (com exemplos de uso) | [ ] **Pendente** |
-| Descrição da documentação Swagger (prints ou trechos) | [ ] **Pendente** (API já documentada; faltam prints no PDF) |
+| Descrição detalhada da arquitetura da aplicação | [x] Em texto: `docs/RELATORIO-TECNICO.md` (exportar para PDF) |
+| Modelagem das entidades e relacionamentos | [x] Em texto no relatório |
+| Descrição dos endpoints (com exemplos de uso) | [x] Em texto no relatório |
+| Descrição da documentação Swagger (prints ou trechos) | [~] Trechos ok; faltam prints no PDF |
 | Descrição da coleção Postman (prints e exemplos) | [ ] **Pendente** (depende do item 5) |
-| Estrutura do banco de dados (tabelas) | [ ] **Pendente** |
-| Passo a passo para executar com Docker Compose (env + exemplos) | [ ] **Pendente** |
+| Estrutura do banco de dados (tabelas) | [x] Em texto no relatório |
+| Passo a passo para executar com Docker Compose (env + exemplos) | [x] Em texto no relatório + README |
 
 ### 7. Execução com Docker
 
@@ -126,10 +128,10 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 |---|---|
 | Repositório GitHub/GitLab aberto | [ ] Confirmar publicação / visibilidade |
 | Código-fonte no repositório | [x] |
-| README | [ ] **Pendente** (hoje só há `HELP.md` do Spring Initializr) |
+| README | [x] `README.md` |
 | Documentação Swagger no projeto | [x] SpringDoc + UI em `/swagger-ui/index.html` |
 | Coleção JSON do Postman no projeto | [ ] **Pendente** (item 5) |
-| Relatório PDF submetido separadamente | [ ] **Pendente** (item 6) |
+| Relatório PDF submetido separadamente | [~] Base em texto pronta (`docs/RELATORIO-TECNICO.md`); PDF ainda não gerado |
 
 ---
 
@@ -143,10 +145,8 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 ## Ordem sugerida para fechar a entrega
 
 1. **Coleção Postman JSON** (item 5) — cobrir os cenários obrigatórios
-2. **README** do repositório (item 8) — como rodar local e com Docker + link do Swagger
-3. Limpeza menor de código (qualidade)
-4. **Relatório técnico em PDF** (item 6) — com prints de Swagger/Postman/Docker
-5. Publicar/abrir o repositório e submeter o PDF
+2. Incluir prints Swagger/Postman no relatório e **exportar PDF** (item 6)
+3. Publicar/abrir o repositório e submeter o PDF
 
 ---
 
@@ -155,10 +155,10 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 | Área | Situação |
 |---|---|
 | 1. Funcionalidade | Praticamente completa |
-| 2. Qualidade do código | Parcial (limpeza / testes) |
+| 2. Qualidade do código | Parcial (testes opcionais) |
 | 3. Swagger | Completo |
 | 4. Banco de dados | Completo |
 | 5. Postman | **Falta** |
-| 6. Relatório PDF | **Falta** |
+| 6. Relatório | Texto pronto; **PDF** pendente |
 | 7. Docker Compose (app + banco) | Completo |
-| 8. Repositório (README + artefatos) | **Falta README e Postman** |
+| 8. Repositório | README ok; falta Postman |

@@ -1,71 +1,164 @@
 # Pendências — API Restaurant
 
-Documento de gap analysis com base nos requisitos do projeto.  
-Objetivo: checklist do que ainda falta implementar.
+Documento de gap analysis com base nos requisitos do projeto e nos **Entregáveis e Critérios de Avaliação**.  
+Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 ---
 
-## Já atendido
+## Já atendido (visão técnica)
 
 - [x] Modelo com dois tipos de usuário: **Cliente** (`Customer`) e **Dono de restaurante** (`Restaurant`), ambos vinculados a `User`
 - [x] Campos obrigatórios do usuário: nome, e-mail, login, senha, data da última alteração, endereço
-- [x] E-mail único (constraint no banco + validação prévia via `UserRepository.findByEmail` em create/edit de cliente e restaurante)
-- [x] Validação prévia cruzada (mesmo e-mail não passa entre cliente e restaurante); no edit ignora se o e-mail não mudou (`!isEmailEquals`)
+- [x] E-mail único (constraint no banco + validação prévia via `UserRepository.findByEmail` em create/edit)
+- [x] Validação prévia cruzada (mesmo e-mail não passa entre cliente e restaurante); no edit ignora se o e-mail não mudou
 - [x] `updatedAt` atualizado em create / edit / troca de senha do **cliente** e do **dono**
-- [x] CRUD completo de cliente (create, update, delete, get por id, busca por nome)
-- [x] CRUD completo de restaurante/dono (create, update, delete, listagem/busca por nome)
-- [x] Endpoint separado de troca de senha do cliente: `PATCH /api/v1/customers/{id}/change-password`
-- [x] Endpoint separado de troca de senha do dono: `PATCH /api/v1/restaurants/{id}/change-password`
+- [x] CRUD completo de cliente e de restaurante/dono
+- [x] Endpoint separado de troca de senha (cliente e dono)
 - [x] Endpoint distinto de atualização de dados (sem senha) para cliente e dono
-- [x] Hash de senha com BCrypt em todos os fluxos de create / troca de senha (`SecurityConfig` + `PasswordEncoder`)
+- [x] Hash de senha com BCrypt (`SecurityConfig` + `PasswordEncoder`)
 - [x] Login para **cliente** e **dono**: `POST /api/v1/auth/login` (`UnauthorizedException` → **401**)
-- [x] Versionamento de API via path: `/api/v1/customers`, `/api/v1/restaurants`, `/api/v1/auth`
-- [x] Handler global de exceções com `ProblemDetail` (RFC 7807): `GlobalExceptionHandler`
-  - **404** — `EntityNotFoundException`
-  - **400** — `IllegalArgumentException`
-  - **401** — `UnauthorizedException`
-  - **409** — `DataIntegrityViolationException`
-- [x] Remoção dos `try/catch` genéricos nos controllers (erros sobem para o handler)
-- [x] Status `201 Created` nos POSTs de criação (cliente, restaurante, cliente vinculado)
-- [x] `password` removido do `EditUserDTO` (senha só no endpoint de troca)
-- [x] PostgreSQL via Docker Compose (`compose.yaml`)
-- [x] `Dockerfile` multi-stage (JDK 25 build + JRE 25 runtime)
-- [x] Serviço `app` no Compose (profile `full`) com datasource e `SPRING_DOCKER_COMPOSE_ENABLED=false`
+- [x] Versionamento de API via path: `/api/v1/...`
+- [x] `ProblemDetail` (RFC 7807) via `GlobalExceptionHandler` (404 / 400 / 401 / 409)
+- [x] PostgreSQL + `Dockerfile` + serviço `app` no Compose (profile `full`)
   - Uso: `docker compose --profile full up --build`
+- [x] Documentação Swagger/OpenAPI (SpringDoc): UI em `/swagger-ui/index.html`, controllers e DTOs com exemplos de sucesso/erro
 
 ---
 
-## 1. Ajustes e inconsistências menores
+## Entregáveis e Critérios de Avaliação
 
-### Pendente
+### 1. Funcionalidade
 
-- [ ] Revisar imports não usados / código morto nos controllers (ex.: `Customer`, `Restaurant`, repositórios e `Autowired` em `RestaurantController`)
-- [ ] Alinhar tipo de retorno do `DELETE` de restaurante (`ResponseEntity<ResponseBodyRestaurantDTO>` com body vazio → preferir `ResponseEntity<Void>`)
-- [ ] Validação prévia de **login** duplicado via `User` (hoje o conflito de login depende da constraint do banco + handler 409)
-- [ ] Validar se a exclusão de restaurante/cliente deve checar vínculos N:N antes do delete
+| Critério | Status |
+|---|---|
+| Backend atende aos requisitos especificados | [x] Em grande parte — faltam itens de entrega (Postman, README, relatório) |
+| Endpoints funcionam com tratamento de erros adequado | [x] `GlobalExceptionHandler` + `ProblemDetail` |
+| Estratégia de versionamento de API | [x] Path `/api/v1/...` |
+| Padrão ProblemDetail (RFC 7807) | [x] |
+| Dois tipos de usuário (dono e cliente) | [x] |
+| Busca de usuários por nome | [x] Cliente e restaurante |
+| Unicidade de e-mail no cadastro | [x] Constraint + `UserRepository.findByEmail` |
+| Serviço de validação de login (login + senha) | [x] `POST /api/v1/auth/login` |
+| Endpoint separado para troca de senha | [x] `PATCH .../change-password` (ambos) |
+| Endpoint distinto para atualização das demais informações | [x] `PUT` sem senha (ambos) |
+
+### 2. Qualidade do Código
+
+| Critério | Status |
+|---|---|
+| Boas práticas Spring Boot, SOLID e OO | [~] Parcial — estrutura em camadas ok; ainda há limpeza (imports mortos, etc.) |
+| Código organizado, testável e bem estruturado | [~] Parcial — falta reforçar testes automatizados e revisão de código morto |
+
+#### Pendente (qualidade)
+
+- [ ] (Opcional) validação prévia de **login** duplicado via `User` (hoje depende da constraint + 409)
+- [ ] (Opcional) regra de exclusão com checagem de vínculos N:N
+- [ ] (Opcional) ampliar cobertura de testes automatizados
+
+### 3. Documentação com Swagger
+
+| Critério | Status |
+|---|---|
+| Endpoints documentados com Swagger/OpenAPI | [x] SpringDoc + anotações nos controllers |
+| Exemplos de requisições e respostas de sucesso e erro | [x] `@Schema` nos DTOs + exemplos de ProblemDetail |
+
+#### Já atendido
+
+- [x] Dependência `springdoc-openapi-starter-webmvc-ui` (3.1.0)
+- [x] `OpenApiConfig` com título, descrição e versão `v1`
+- [x] Controllers `Auth`, `Customer` e `Restaurant` com `@Tag`, `@Operation` e `@ApiResponses`
+- [x] Exemplos de sucesso e erro (400 / 401 / 404 / 409 com ProblemDetail)
+- [x] Schemas/exemplos nos DTOs de request e response
+- [x] UI acessível (Security com `permitAll`): `http://localhost:8080/swagger-ui/index.html`
+
+### 4. Banco de Dados
+
+| Critério | Status |
+|---|---|
+| Banco relacional obrigatório | [x] PostgreSQL |
+| Banco recomendado (MySQL ou PostgreSQL) | [x] PostgreSQL |
+| Banco em container Docker no Compose | [x] Serviço `postgres` em `compose.yaml` |
+
+### 5. Collections para Testes (Postman)
+
+| Critério | Status |
+|---|---|
+| Coleção Postman em JSON no repositório | [ ] **Pendente** |
+
+#### Cenários obrigatórios na coleção
+
+- [ ] Cadastro de usuário válido (cliente e/ou dono)
+- [ ] Tentativa de cadastro inválido (e-mail duplicado, campos obrigatórios faltando)
+- [ ] Alteração de senha com sucesso e erro (endpoint exclusivo)
+- [ ] Atualização de dados do usuário com sucesso e erro (endpoint distinto)
+- [ ] Busca de usuários pelo nome
+- [ ] Validação de login (obrigatória)
+
+### 6. Relatório Técnico (ÚNICO ENTREGÁVEL OFICIAL)
+
+> O único arquivo a ser entregue oficialmente será o **relatório em PDF** (submetido separadamente).  
+> O código fica no repositório; o PDF é o entregável formal.
+
+| Conteúdo obrigatório do PDF | Status |
+|---|---|
+| Descrição detalhada da arquitetura da aplicação | [ ] **Pendente** |
+| Modelagem das entidades e relacionamentos | [ ] **Pendente** |
+| Descrição dos endpoints (com exemplos de uso) | [ ] **Pendente** |
+| Descrição da documentação Swagger (prints ou trechos) | [ ] **Pendente** (API já documentada; faltam prints no PDF) |
+| Descrição da coleção Postman (prints e exemplos) | [ ] **Pendente** (depende do item 5) |
+| Estrutura do banco de dados (tabelas) | [ ] **Pendente** |
+| Passo a passo para executar com Docker Compose (env + exemplos) | [ ] **Pendente** |
+
+### 7. Execução com Docker
+
+| Critério | Status |
+|---|---|
+| Compose para subir aplicação **e** banco | [x] `compose.yaml` com `postgres` + `app` (profile `full`) |
+
+#### Observação
+
+- Arquivo no projeto: `compose.yaml` (equivalente ao `docker-compose.yml` pedido no enunciado).
+- Subir tudo: `docker compose --profile full up --build`
+
+### 8. Repositório de Código
+
+| Critério | Status |
+|---|---|
+| Repositório GitHub/GitLab aberto | [ ] Confirmar publicação / visibilidade |
+| Código-fonte no repositório | [x] |
+| README | [ ] **Pendente** (hoje só há `HELP.md` do Spring Initializr) |
+| Documentação Swagger no projeto | [x] SpringDoc + UI em `/swagger-ui/index.html` |
+| Coleção JSON do Postman no projeto | [ ] **Pendente** (item 5) |
+| Relatório PDF submetido separadamente | [ ] **Pendente** (item 6) |
 
 ---
 
-## Ordem sugerida de implementação
+## Ajustes técnicos menores restantes
 
-1. Limpeza menor de controllers / contratos de resposta
-2. (Opcional) validação prévia de login duplicado no mesmo padrão do e-mail
-3. (Opcional) regra de negócio para exclusão com vínculos
+- [ ] (Opcional) validação prévia de login duplicado
+- [ ] (Opcional) exclusão com validação de vínculos N:N
 
 ---
 
-## Critérios de aceite (checklist final)
+## Ordem sugerida para fechar a entrega
 
-Com base nos entregáveis do enunciado:
+1. **Coleção Postman JSON** (item 5) — cobrir os cenários obrigatórios
+2. **README** do repositório (item 8) — como rodar local e com Docker + link do Swagger
+3. Limpeza menor de código (qualidade)
+4. **Relatório técnico em PDF** (item 6) — com prints de Swagger/Postman/Docker
+5. Publicar/abrir o repositório e submeter o PDF
 
-- [x] Cadastro, atualização e exclusão de usuários (cliente **e** dono)
-- [x] Troca de senha em endpoint separado (ambos os tipos)
-- [x] Atualização das demais informações em endpoint distinto (ambos os tipos)
-- [x] Registro da data da última alteração
-- [x] Busca de usuários pelo nome
-- [x] E-mail único no cadastro (constraint + validação prévia em `User`)
-- [x] Serviço de validação de login (login + senha) para os dois tipos
-- [x] Dois tipos de usuário: dono de restaurante e cliente
-- [x] Versionamento de API (`/api/v1/...`)
-- [x] ProblemDetail (RFC 7807) nas respostas de erro
-- [x] Docker Compose com aplicação + banco relacional (`--profile full`)
+---
+
+## Resumo executivo
+
+| Área | Situação |
+|---|---|
+| 1. Funcionalidade | Praticamente completa |
+| 2. Qualidade do código | Parcial (limpeza / testes) |
+| 3. Swagger | Completo |
+| 4. Banco de dados | Completo |
+| 5. Postman | **Falta** |
+| 6. Relatório PDF | **Falta** |
+| 7. Docker Compose (app + banco) | Completo |
+| 8. Repositório (README + artefatos) | **Falta README e Postman** |

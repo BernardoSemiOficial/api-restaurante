@@ -1,3 +1,12 @@
 package com.api.restaurant.interfaces;
 
-public record CreateAddressDTO (String zipCode, String street, String number, String city, String state) {}
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "Endereço do usuário")
+public record CreateAddressDTO(
+        @Schema(example = "01310-100") String zipCode,
+        @Schema(example = "Av. Paulista") String street,
+        @Schema(example = "1000") String number,
+        @Schema(example = "São Paulo") String city,
+        @Schema(example = "SP") String state
+) {}

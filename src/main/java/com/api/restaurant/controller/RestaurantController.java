@@ -46,13 +46,13 @@ public class RestaurantController {
     }
 
     @PatchMapping("/{restaurantId}/change-password")
-    public ResponseEntity<ResponseBodyRestaurantDTO> editRestaurantPassword(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantPasswordDTO dto) {
+    public ResponseEntity<Void> editRestaurantPassword(@PathVariable Long restaurantId, @RequestBody EditRequestBodyRestaurantPasswordDTO dto) {
         restaurantService.editRestaurantPassword(restaurantId, dto);
         return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{restaurantId}")
-    public ResponseEntity<ResponseBodyRestaurantDTO> deleteRestaurant(@PathVariable Long restaurantId) {
+    public ResponseEntity<Void> deleteRestaurant(@PathVariable Long restaurantId) {
         restaurantService.deleteRestaurant(restaurantId);
         return ResponseEntity.ok().build();
     }

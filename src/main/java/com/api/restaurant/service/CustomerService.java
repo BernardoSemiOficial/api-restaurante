@@ -7,6 +7,7 @@ import com.api.restaurant.model.Restaurant;
 import com.api.restaurant.model.User;
 import com.api.restaurant.repository.CustomerRepository;
 import com.api.restaurant.repository.RestaurantRepository;
+import com.api.restaurant.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -23,11 +24,13 @@ public class CustomerService {
     private final CustomerRepository customerRepository;
     private final RestaurantRepository restaurantRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public CustomerService(CustomerRepository customerRepository, RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder) {
+    public CustomerService(CustomerRepository customerRepository, RestaurantRepository restaurantRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.customerRepository = customerRepository;
         this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public List<ResponseBodyCustomerDTO> getCustomersByRestaurant(Long restaurantId) {
@@ -66,8 +69,8 @@ public class CustomerService {
         customer.setCpf(dto.cpf());
         customer.getRestaurants().add(restaurant);
 
-        this.customerRepository.findByUserEmail(dto.user().email())
-                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+        boolean isExistUserEmail = this.userRepository.findByEmail(dto.user().email()).isPresent();
+        if(isExistUserEmail) throw new DataIntegrityViolationException("E-mail já cadastrado");
 
         Customer newCustomer = this.customerRepository.save(customer);
 
@@ -113,8 +116,8 @@ public class CustomerService {
         customer.setUser(user);
         customer.setCpf(dto.cpf());
 
-        this.customerRepository.findByUserEmail(dto.user().email())
-                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+        boolean isExistUserEmail = this.userRepository.findByEmail(dto.user().email()).isPresent();
+        if(isExistUserEmail) throw new DataIntegrityViolationException("E-mail já cadastrado");
 
         Customer newCustomer = this.customerRepository.save(customer);
         return new ResponseBodyCustomerDTO(newCustomer);
@@ -126,6 +129,7 @@ public class CustomerService {
                 .orElseThrow(() -> new EntityNotFoundException("Cliente não encontrado com ID: " + customerId));
 
         User user = customer.getUser();
+        boolean isEmailEquals = dto.user().email().equals(user.getEmail());
 
         if (dto.user() != null) {
             if (dto.user().name() != null) user.setName(dto.user().name());
@@ -148,8 +152,9 @@ public class CustomerService {
 
         user.setUpdatedAt(LocalDateTime.now());
 
-        this.customerRepository.findByUserEmail(dto.user().email())
-                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+
+        boolean isExistUserEmail = this.userRepository.findByEmail(dto.user().email()).isPresent();
+        if(!isEmailEquals && isExistUserEmail) throw new DataIntegrityViolationException("E-mail já cadastrado");
 
         Customer savedCustomer = this.customerRepository.save(customer);
         return new ResponseBodyCustomerDTO(savedCustomer);

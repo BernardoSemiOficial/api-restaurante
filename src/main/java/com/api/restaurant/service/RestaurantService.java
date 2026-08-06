@@ -6,6 +6,7 @@ import com.api.restaurant.model.Customer;
 import com.api.restaurant.model.Restaurant;
 import com.api.restaurant.model.User;
 import com.api.restaurant.repository.RestaurantRepository;
+import com.api.restaurant.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -21,10 +22,12 @@ public class RestaurantService {
 
     private final RestaurantRepository restaurantRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
 
-    public RestaurantService(RestaurantRepository restaurantRepository, PasswordEncoder passwordEncoder) {
+    public RestaurantService(RestaurantRepository restaurantRepository, UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.restaurantRepository = restaurantRepository;
         this.passwordEncoder = passwordEncoder;
+        this.userRepository = userRepository;
     }
 
     public Optional<Restaurant> findRestaurant(String login) {
@@ -72,8 +75,8 @@ public class RestaurantService {
         restaurant.setCnpj(dto.cnpj());
         restaurant.setCuisineType(dto.cuisineType());
 
-        this.restaurantRepository.findByUserEmail(dto.user().email())
-                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+        boolean isExistUserEmail = this.userRepository.findByEmail(dto.user().email()).isPresent();
+        if(isExistUserEmail) throw new DataIntegrityViolationException("E-mail já cadastrado");
 
         return this.restaurantRepository.save(restaurant);
     }
@@ -84,6 +87,7 @@ public class RestaurantService {
                 .orElseThrow(() -> new EntityNotFoundException("Restaurante não encontrado com ID: " + restaurantId));
 
         User user = restaurant.getUser();
+        boolean isEmailEquals = dto.user().email().equals(user.getEmail());
 
         if (dto.user() != null) {
             if (dto.user().name() != null) user.setName(dto.user().name());
@@ -106,8 +110,8 @@ public class RestaurantService {
 
         user.setUpdatedAt(LocalDateTime.now());
 
-        this.restaurantRepository.findByUserEmail(dto.user().email())
-                .orElseThrow(() -> new DataIntegrityViolationException("E-mail já cadastrado"));
+        boolean isExistUserEmail = this.userRepository.findByEmail(dto.user().email()).isPresent();
+        if(!isEmailEquals && isExistUserEmail) throw new DataIntegrityViolationException("E-mail já cadastrado");
 
         Restaurant savedRestaurant = this.restaurantRepository.save(restaurant);
         return new ResponseBodyRestaurantDTO(savedRestaurant);

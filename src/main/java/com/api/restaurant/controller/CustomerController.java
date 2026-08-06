@@ -53,7 +53,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/{customerId}/change-password")
-    public ResponseEntity<ResponseBodyCustomerDTO> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
+    public ResponseEntity<Void> editCustomerPassword(@PathVariable Long customerId, @RequestBody EditRequestBodyCustomerPasswordDTO dto) {
         customerService.editCustomerPassword(customerId, dto);
         return ResponseEntity.ok().build();
     }

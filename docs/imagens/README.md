@@ -1,16 +1,15 @@
 # Imagens do relatório PDF
 
-Salve aqui os prints referenciados em `docs/RELATORIO-TECNICO.md`.
+Prints referenciados em `docs/RELATORIO-TECNICO.md`.
 
-| Arquivo sugerido | Seção |
+| Arquivo | Figura / seção |
 |---|---|
-| `arquitetura-pastas.png` | 1 — Arquitetura (opcional) |
-| `der-entidades.png` | 2 — Modelagem / DER |
-| `swagger-lista-endpoints.png` | 4 — Swagger |
-| `swagger-detalhe-operacao.png` | 4 — Swagger |
-| `swagger-erro-problemdetail.png` | 4 — Swagger |
-| `postman-pastas.png` | 5 — Postman |
-| `postman-sucesso.png` | 5 — Postman |
-| `postman-erro.png` | 5 — Postman |
-| `der-banco.png` | 6 — Banco (se distinto do DER da seção 2) |
-| `docker-compose-up.png` | 7 — Docker (opcional) |
+| `arquitetura-pastas.png` | Figura 1 — Arquitetura |
+| `der-entidades.png` | Figuras 2 e 9 — Modelagem / banco |
+| `swagger-lista-endpoints.png` | Figura 3 — Swagger |
+| `swagger-detalhe-operacao.png` | Figura 4 — Swagger |
+| `swagger-erro-problemdetail.png` | Figura 5 — Swagger |
+| `postman-pastas.png` | Figura 6 — Postman |
+| `postman-sucesso.png` | Figura 7 — Postman |
+| `postman-erro.png` | Figura 8 — Postman |
+| `docker-compose-up.png` | Figura 10 — Docker |

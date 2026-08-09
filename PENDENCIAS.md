@@ -23,9 +23,9 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
   - Uso: `docker compose --profile full up --build`
 - [x] Documentação Swagger/OpenAPI (SpringDoc): UI em `/swagger-ui/index.html`, controllers e DTOs com exemplos de sucesso/erro
 - [x] README do repositório
-- [x] Relatório técnico em texto (`docs/RELATORIO-TECNICO.md`) — rascunho do PDF com placeholders de imagem
+- [x] Relatório técnico em texto (`docs/RELATORIO-TECNICO.md`) — rascunho do PDF com figuras
 - [x] Coleção Postman em JSON (`Restaurant API.postman_collection.json`) alinhada a `/api/v1`
-- [x] Pasta `docs/imagens/` preparada para prints do PDF
+- [x] Prints do PDF em `docs/imagens/` referenciados no relatório
 
 ---
 
@@ -108,12 +108,12 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 | Conteúdo obrigatório do PDF | Status |
 |---|---|
 | Descrição detalhada da arquitetura da aplicação | [x] Texto pronto em `docs/RELATORIO-TECNICO.md` |
-| Modelagem das entidades e relacionamentos | [x] Texto pronto; placeholder DER em `docs/imagens/` |
+| Modelagem das entidades e relacionamentos | [x] Texto + DER (`der-entidades.png`) |
 | Descrição dos endpoints (com exemplos de uso) | [x] Texto pronto (JSON de sucesso/erro) |
-| Descrição da documentação Swagger (prints ou trechos) | [~] Texto pronto; **faltam inserir prints** |
-| Descrição da coleção Postman (prints e exemplos) | [~] Texto pronto; **faltam inserir prints** |
-| Estrutura do banco de dados (tabelas) | [x] Texto pronto; placeholder DER banco |
-| Passo a passo para executar com Docker Compose (env + exemplos) | [x] Texto pronto; placeholder opcional do terminal |
+| Descrição da documentação Swagger (prints ou trechos) | [x] Texto + prints em `docs/imagens/` |
+| Descrição da coleção Postman (prints e exemplos) | [x] Texto + prints em `docs/imagens/` |
+| Estrutura do banco de dados (tabelas) | [x] Texto + DER (`der-entidades.png`) |
+| Passo a passo para executar com Docker Compose (env + exemplos) | [x] Texto + print do Compose |
 
 ### 7. Execução com Docker
 
@@ -135,7 +135,7 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 | README | [x] `README.md` |
 | Documentação Swagger no projeto | [x] SpringDoc + UI em `/swagger-ui/index.html` |
 | Coleção JSON do Postman no projeto | [x] `Restaurant API.postman_collection.json` |
-| Relatório PDF submetido separadamente | [~] Texto do PDF pronto (`docs/RELATORIO-TECNICO.md`); faltam prints + exportar PDF |
+| Relatório PDF submetido separadamente | [~] Texto + imagens + capa completos; falta **exportar/submeter PDF** |
 
 ---
 
@@ -148,10 +148,9 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 ## Ordem sugerida para fechar a entrega
 
-1. Preencher a capa do relatório (`[NOME]`, `[CURSO]`, etc.)
-2. Capturar prints e salvar em `docs/imagens/` (Swagger, Postman, DER)
-3. **Exportar PDF** a partir de `docs/RELATORIO-TECNICO.md` e submeter
-4. (Opcional) ampliar testes automatizados / limpeza de código
+1. **Exportar PDF** a partir de `docs/RELATORIO-TECNICO.md` e submeter
+2. (Opcional) ampliar testes automatizados / limpeza de código
+3. Fazer push dos commits locais pendentes (imagens + relatório)
 
 ---
 
@@ -164,6 +163,6 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 | 3. Swagger | Completo |
 | 4. Banco de dados | Completo |
 | 5. Postman | Completo (JSON no repo) |
-| 6. Relatório | **Texto do PDF pronto**; faltam prints + exportar |
+| 6. Relatório | Texto + imagens + capa completos; falta **exportar PDF** |
 | 7. Docker Compose (app + banco) | Completo |
 | 8. Repositório | Público — https://github.com/BernardoSemiOficial/api-restaurante |

@@ -1,7 +1,7 @@
 # Relatório Técnico — Restaurant API
 
 > Rascunho do entregável oficial em **PDF**.  
-> Preencher a capa, inserir as imagens nos blocos `[IMAGEM — …]` (pasta `docs/imagens/`) e exportar este Markdown para PDF.
+> Preencher a capa e exportar este Markdown para PDF. As imagens estão em `docs/imagens/`.
 
 ---
 
@@ -10,11 +10,12 @@
 | Campo | Valor |
 |---|---|
 | **Título** | Relatório Técnico — Restaurant API |
-| **Autor** | `[NOME]` |
-| **Curso / pós-graduação** | `[CURSO]` |
-| **Instituição** | `[INSTITUIÇÃO]` |
-| **Turma / disciplina** | `[TURMA]` |
-| **Data** | `[DATA]` |
+| **Autor** | Bernardo Pereira Oliveira |
+| **RM** | 375854 |
+| **Curso / pós-graduação** | Arquitetura e Desenvolvimento Java |
+| **Instituição** | FIAP |
+| **Turma / disciplina** | 13ADJT |
+| **Data** | 09/08/2026 |
 | **Repositório** | https://github.com/BernardoSemiOficial/api-restaurante |
 
 ---
@@ -76,9 +77,9 @@ Cliente HTTP (Postman / Swagger UI / frontend)
 - **E-mail único:** constraint no banco e validação prévia via `UserRepository.findByEmail` (abrangendo cliente e dono).
 - **Infraestrutura:** `Dockerfile` multi-stage e `compose.yaml` com PostgreSQL e serviço `app` (profile `full`).
 
-> **[IMAGEM — Estrutura de pastas do projeto (opcional)]**  
-> Arquivo sugerido: `docs/imagens/arquitetura-pastas.png`  
-> *Inserir print da árvore `src/main/java/com/api/restaurant/` ou diagrama de camadas.*
+**Figura 1 — Estrutura de pastas / camadas do projeto**
+
+![Estrutura de pastas do projeto](imagens/arquitetura-pastas.png)
 
 ---
 
@@ -116,9 +117,9 @@ Dono/estabelecimento: referência 1:1 a `User`, CNPJ e tipo de cozinha (`cuisine
 **Relacionamento N:N**  
 A tabela pivô `customer_restaurant` associa clientes a restaurantes (por exemplo, cliente criado já vinculado a um restaurante).
 
-> **[IMAGEM — DER / diagrama de entidades]**  
-> Arquivo sugerido: `docs/imagens/der-entidades.png`  
-> *Inserir diagrama entidade-relacionamento (DER) ou modelo visual das tabelas e FKs.*
+**Figura 2 — Diagrama de entidades e relacionamentos (DER)**
+
+![Diagrama de entidades e relacionamentos](imagens/der-entidades.png)
 
 ---
 
@@ -264,17 +265,17 @@ A API utiliza **SpringDoc OpenAPI** (`springdoc-openapi-starter-webmvc-ui`) para
 
 Com a aplicação em execução, a Swagger UI permite explorar os endpoints, visualizar contratos e enviar requisições de teste diretamente pelo navegador.
 
-> **[IMAGEM — Swagger UI: lista de endpoints]**  
-> Arquivo sugerido: `docs/imagens/swagger-lista-endpoints.png`  
-> *Inserir print da página inicial do Swagger com as tags Auth, Customer e Restaurant.*
+**Figura 3 — Swagger UI: lista de endpoints**
 
-> **[IMAGEM — Swagger UI: detalhe de uma operação]**  
-> Arquivo sugerido: `docs/imagens/swagger-detalhe-operacao.png`  
-> *Inserir print de uma operação expandida (ex.: `POST /api/v1/customers` ou `POST /api/v1/auth/login`) com schema/exemplo.*
+![Swagger UI — lista de endpoints](imagens/swagger-lista-endpoints.png)
 
-> **[IMAGEM — Swagger UI: resposta de erro ProblemDetail]**  
-> Arquivo sugerido: `docs/imagens/swagger-erro-problemdetail.png`  
-> *Inserir print de exemplo de resposta de erro (400, 401 ou 409) no formato ProblemDetail.*
+**Figura 4 — Swagger UI: detalhe de uma operação**
+
+![Swagger UI — detalhe de uma operação](imagens/swagger-detalhe-operacao.png)
+
+**Figura 5 — Swagger UI: resposta de erro ProblemDetail**
+
+![Swagger UI — erro ProblemDetail](imagens/swagger-erro-problemdetail.png)
 
 ---
 
@@ -309,17 +310,17 @@ A coleção de testes está versionada na raiz do repositório:
 5. **Busca por nome** — query `customerName` / `restaurantName`.  
 6. **Validação de login** — `POST /api/v1/auth/login`.
 
-> **[IMAGEM — Postman: visão das pastas da coleção]**  
-> Arquivo sugerido: `docs/imagens/postman-pastas.png`  
-> *Inserir print da coleção importada mostrando as pastas Auth, Restaurant e Customer.*
+**Figura 6 — Postman: pastas da coleção**
 
-> **[IMAGEM — Postman: request de sucesso]**  
-> Arquivo sugerido: `docs/imagens/postman-sucesso.png`  
-> *Inserir print de um request bem-sucedido (ex.: login 200 ou criação de cliente 201) com status e body.*
+![Postman — pastas da coleção](imagens/postman-pastas.png)
 
-> **[IMAGEM — Postman: request de erro]**  
-> Arquivo sugerido: `docs/imagens/postman-erro.png`  
-> *Inserir print de um cenário de erro (ex.: login inválido 401 ou e-mail duplicado 409) com ProblemDetail.*
+**Figura 7 — Postman: request de sucesso**
+
+![Postman — request de sucesso](imagens/postman-sucesso.png)
+
+**Figura 8 — Postman: request de erro**
+
+![Postman — request de erro](imagens/postman-erro.png)
 
 ---
 
@@ -347,9 +348,11 @@ O banco utilizado é **PostgreSQL**, executado em container Docker conforme o `c
 - `customer_restaurant.customer_id` → `customer.id`
 - `customer_restaurant.restaurant_id` → `restaurant.id`
 
-> **[IMAGEM — DER / tabelas do banco (se distinto do diagrama da seção 2)]**  
-> Arquivo sugerido: `docs/imagens/der-banco.png`  
-> *Inserir print ou diagrama das tabelas físicas do PostgreSQL. Se o DER da seção 2 já cobrir este conteúdo, pode reutilizar a mesma imagem.*
+**Figura 9 — Estrutura do banco (DER)**
+
+O diagrama físico das tabelas corresponde ao DER da seção 2 (Figura 2).
+
+![Estrutura do banco de dados](imagens/der-entidades.png)
 
 ---
 
@@ -392,9 +395,9 @@ docker compose --profile full up --build
 docker compose --profile full down
 ```
 
-> **[IMAGEM — Docker Compose em execução (opcional)]**  
-> Arquivo sugerido: `docs/imagens/docker-compose-up.png`  
-> *Inserir print do terminal após `docker compose --profile full up --build` com a API e o Postgres ativos.*
+**Figura 10 — Docker Compose em execução**
+
+![Docker Compose — app e Postgres em execução](imagens/docker-compose-up.png)
 
 ### 7.3 Variáveis de ambiente da aplicação (Compose)
 
@@ -441,7 +444,5 @@ Esse padrão garante respostas de erro consistentes para consumo via Postman, Sw
 
 ## Como finalizar o PDF
 
-1. Preencher os campos da **capa** (`[NOME]`, `[CURSO]`, etc.).  
-2. Capturar os prints e salvá-los em `docs/imagens/` com os nomes sugeridos (ou substituir os blocos `[IMAGEM — …]` pelas figuras no editor de exportação).  
-3. Exportar este arquivo para **PDF** (Pandoc, Word, Google Docs ou ferramenta equivalente).  
-4. Submeter o PDF como entregável oficial; o código permanece no GitHub.
+1. Exportar este arquivo para **PDF** (Pandoc, Word, Google Docs ou ferramenta equivalente), garantindo que as figuras de `docs/imagens/` sejam incluídas.  
+2. Submeter o PDF como entregável oficial; o código permanece no GitHub.

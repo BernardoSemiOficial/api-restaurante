@@ -94,12 +94,14 @@ Documentação interativa: **Swagger UI** em `/swagger-ui/index.html`.
 
 | Arquivo | Conteúdo |
 |---|---|
-| [docs/RELATORIO-TECNICO.md](docs/RELATORIO-TECNICO.md) | Relatório técnico em texto (base para o PDF) |
+| [docs/RELATORIO-TECNICO.md](docs/RELATORIO-TECNICO.md) | Rascunho do relatório PDF (textos + placeholders de imagem) |
+| [docs/imagens/](docs/imagens/) | Pasta para prints do PDF (Swagger, Postman, DER) |
 | [PENDENCIAS.md](PENDENCIAS.md) | Checklist de entregáveis e critérios |
 | [Restaurant API.postman_collection.json](Restaurant%20API.postman_collection.json) | Coleção Postman (`/api/v1`) |
 | [HELP.md](HELP.md) | Notas do Spring Initializr |
 
-Importe o JSON no Postman e use a variável `baseUrl` (`http://localhost:8080`).
+Importe o JSON no Postman e use a variável `baseUrl` (`http://localhost:8080`).  
+Para o PDF: preencha a capa em `docs/RELATORIO-TECNICO.md`, adicione os prints em `docs/imagens/` e exporte o Markdown.
 
 ---
 

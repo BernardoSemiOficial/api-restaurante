@@ -1,17 +1,45 @@
 # Relatório Técnico — Restaurant API
 
-Documento em texto (versão preliminar do relatório oficial em PDF).  
-Projeto: API REST de clientes e donos de restaurante.  
-Repositório: https://github.com/BernardoSemiOficial/api-restaurante
+> Rascunho do entregável oficial em **PDF**.  
+> Preencher a capa, inserir as imagens nos blocos `[IMAGEM — …]` (pasta `docs/imagens/`) e exportar este Markdown para PDF.
 
 ---
 
-## 1. Descrição da arquitetura
+## Capa / identificação
 
-A aplicação segue o modelo clássico em camadas do Spring Boot:
+| Campo | Valor |
+|---|---|
+| **Título** | Relatório Técnico — Restaurant API |
+| **Autor** | `[NOME]` |
+| **Curso / pós-graduação** | `[CURSO]` |
+| **Instituição** | `[INSTITUIÇÃO]` |
+| **Turma / disciplina** | `[TURMA]` |
+| **Data** | `[DATA]` |
+| **Repositório** | https://github.com/BernardoSemiOficial/api-restaurante |
+
+---
+
+## Sumário
+
+1. [Descrição da arquitetura da aplicação](#1-descrição-da-arquitetura-da-aplicação)
+2. [Modelagem das entidades e relacionamentos](#2-modelagem-das-entidades-e-relacionamentos)
+3. [Descrição dos endpoints](#3-descrição-dos-endpoints)
+4. [Documentação Swagger / OpenAPI](#4-documentação-swagger--openapi)
+5. [Coleção Postman](#5-coleção-postman)
+6. [Estrutura do banco de dados](#6-estrutura-do-banco-de-dados)
+7. [Execução com Docker Compose](#7-execução-com-docker-compose)
+8. [Tratamento de erros (ProblemDetail)](#8-tratamento-de-erros-problemdetail)
+
+---
+
+## 1. Descrição da arquitetura da aplicação
+
+A **Restaurant API** é uma aplicação backend REST desenvolvida em **Spring Boot**, responsável pelo cadastro e gestão de dois tipos de usuário: **cliente** (`Customer`) e **dono de restaurante** (`Restaurant`). Ambos compartilham dados comuns por meio da entidade `User` (nome, e-mail, login, senha, data da última alteração e endereço).
+
+A arquitetura segue o padrão em camadas típico de aplicações Spring:
 
 ```
-Cliente HTTP (Postman / Swagger / frontend)
+Cliente HTTP (Postman / Swagger UI / frontend)
         │
         ▼
    Controllers  (/api/v1/...)
@@ -26,33 +54,39 @@ Cliente HTTP (Postman / Swagger / frontend)
    PostgreSQL   (schema em schema-restaurant.sql)
 ```
 
-### Componentes principais
+### 1.1 Componentes principais
 
 | Camada | Pacote | Responsabilidade |
 |---|---|---|
-| API | `controller` | Expõe endpoints REST versionados |
+| API | `controller` | Expõe endpoints REST versionados em `/api/v1` |
 | Negócio | `service` | CRUD, login, unicidade de e-mail, hash de senha |
-| Persistência | `repository` | Acesso a `Customer`, `Restaurant`, `User` |
+| Persistência | `repository` | Acesso a `Customer`, `Restaurant` e `User` |
 | Modelo | `model` | Entidades JPA |
-| Contratos | `interfaces` | DTOs de request/response |
-| Config | `config` | Security (BCrypt) e OpenAPI |
-| Erros | `exception` | `GlobalExceptionHandler` com ProblemDetail |
+| Contratos | `interfaces` | DTOs de request e response |
+| Configuração | `config` | Security (BCrypt) e OpenAPI (SpringDoc) |
+| Erros | `exception` | `GlobalExceptionHandler` com ProblemDetail (RFC 7807) |
 
-### Decisões de arquitetura
+### 1.2 Decisões de arquitetura
 
-- **Versionamento por path:** `/api/v1/...`
-- **Dois tipos de usuário:** `Customer` e `Restaurant`, ambos com um `User` (dados comuns: nome, e-mail, login, senha, `updatedAt`, endereço)
-- **Senha:** armazenada com BCrypt; troca apenas em endpoint `PATCH .../change-password`
-- **Atualização de perfil:** endpoint `PUT` distinto, sem campo de senha no DTO de edição
-- **Erros:** padronizados com ProblemDetail (RFC 7807) — 400, 401, 404, 409
-- **E-mail único:** constraint no banco + validação prévia em `UserRepository.findByEmail` (abrangendo cliente e dono)
-- **Docker:** `Dockerfile` multi-stage + `compose.yaml` com Postgres e serviço `app` (profile `full`)
+- **Versionamento por path:** todos os endpoints públicos da API estão sob `/api/v1/...`.
+- **Dois tipos de usuário:** `Customer` e `Restaurant`, cada um com um `User` associado (relação 1:1).
+- **Senha:** armazenada com **BCrypt**; alteração somente via `PATCH .../change-password`.
+- **Atualização de perfil:** endpoint `PUT` distinto, sem campo de senha no DTO de edição.
+- **Erros:** padronizados com **ProblemDetail** (RFC 7807) — status 400, 401, 404 e 409.
+- **E-mail único:** constraint no banco e validação prévia via `UserRepository.findByEmail` (abrangendo cliente e dono).
+- **Infraestrutura:** `Dockerfile` multi-stage e `compose.yaml` com PostgreSQL e serviço `app` (profile `full`).
+
+> **[IMAGEM — Estrutura de pastas do projeto (opcional)]**  
+> Arquivo sugerido: `docs/imagens/arquitetura-pastas.png`  
+> *Inserir print da árvore `src/main/java/com/api/restaurant/` ou diagrama de camadas.*
 
 ---
 
 ## 2. Modelagem das entidades e relacionamentos
 
-### Diagrama lógico
+O domínio modela usuários genéricos com endereço, especializados em cliente ou dono de restaurante, e um vínculo **N:N** entre clientes e restaurantes.
+
+### 2.1 Diagrama lógico
 
 ```
 Address 1 ─── 1 User
@@ -65,36 +99,41 @@ Address 1 ─── 1 User
          (customer_restaurant)
 ```
 
-### Entidades
+### 2.2 Entidades
 
 **Address**  
-CEP, rua, número, cidade, estado.
+Representa o endereço do usuário: CEP (`zipCode`), rua, número, cidade e estado.
 
 **User** (`user_account`)  
-Nome, e-mail (UNIQUE), login, senha (hash), `updatedAt`, referência a Address.
+Dados comuns: nome, e-mail (**UNIQUE**), login, senha (hash BCrypt), `updatedAt` e referência a `Address`.
 
 **Customer**  
-Referência 1:1 a User + CPF.
+Cliente do sistema: referência 1:1 a `User` e CPF.
 
 **Restaurant**  
-Referência 1:1 a User + CNPJ + tipo de cozinha (`cuisineType`).
+Dono/estabelecimento: referência 1:1 a `User`, CNPJ e tipo de cozinha (`cuisineType`).
 
 **Relacionamento N:N**  
-Tabela pivô `customer_restaurant` liga clientes a restaurantes.
+A tabela pivô `customer_restaurant` associa clientes a restaurantes (por exemplo, cliente criado já vinculado a um restaurante).
+
+> **[IMAGEM — DER / diagrama de entidades]**  
+> Arquivo sugerido: `docs/imagens/der-entidades.png`  
+> *Inserir diagrama entidade-relacionamento (DER) ou modelo visual das tabelas e FKs.*
 
 ---
 
-## 3. Descrição dos endpoints (com exemplos)
+## 3. Descrição dos endpoints
 
-Base URL local: `http://localhost:8080`
+**Base URL local:** `http://localhost:8080`  
+**Prefixo da API:** `/api/v1`
 
 ### 3.1 Auth
 
 #### `POST /api/v1/auth/login`
 
-Valida login e senha para cliente ou dono.
+Valida login e senha para **cliente** ou **dono de restaurante**.
 
-Request:
+**Request:**
 
 ```json
 {
@@ -103,13 +142,13 @@ Request:
 }
 ```
 
-Sucesso (200):
+**Sucesso (200):**
 
 ```text
 Login realizado com sucesso
 ```
 
-Erro (401) — ProblemDetail:
+**Erro (401)** — ProblemDetail:
 
 ```json
 {
@@ -124,12 +163,12 @@ Erro (401) — ProblemDetail:
 
 | Método | Path | Descrição |
 |---|---|---|
-| GET | `/api/v1/customers?customerName=João` | Busca por nome |
-| GET | `/api/v1/customers/{id}` | Busca por ID |
-| POST | `/api/v1/customers` | Cadastro |
-| PUT | `/api/v1/customers/{id}` | Atualização de dados (sem senha) |
-| PATCH | `/api/v1/customers/{id}/change-password` | Troca de senha |
-| DELETE | `/api/v1/customers/{id}` | Exclusão |
+| `GET` | `/api/v1/customers?customerName=João` | Busca por nome |
+| `GET` | `/api/v1/customers/{id}` | Busca por ID |
+| `POST` | `/api/v1/customers` | Cadastro |
+| `PUT` | `/api/v1/customers/{id}` | Atualização de dados (**sem senha**) |
+| `PATCH` | `/api/v1/customers/{id}/change-password` | Troca de senha |
+| `DELETE` | `/api/v1/customers/{id}` | Exclusão |
 
 #### Exemplo — criar cliente (`POST /api/v1/customers`)
 
@@ -152,11 +191,10 @@ Erro (401) — ProblemDetail:
 }
 ```
 
-Sucesso: **201 Created** com body do cliente.
+- **Sucesso:** `201 Created` com o corpo do cliente criado.  
+- **E-mail ou login duplicado:** `409 Conflict` (ProblemDetail).
 
-Erro e-mail duplicado: **409 Conflict** (ProblemDetail).
-
-#### Exemplo — troca de senha
+#### Exemplo — troca de senha (`PATCH .../change-password`)
 
 ```json
 {
@@ -165,22 +203,22 @@ Erro e-mail duplicado: **409 Conflict** (ProblemDetail).
 }
 ```
 
-Sucesso: **200**.  
-Senha atual incorreta: **400** (ProblemDetail).
+- **Sucesso:** `200 OK`.  
+- **Senha atual incorreta:** `400 Bad Request` (ProblemDetail).
 
 ### 3.3 Restaurants
 
 | Método | Path | Descrição |
 |---|---|---|
-| GET | `/api/v1/restaurants?restaurantName=` | Lista/busca por nome |
-| POST | `/api/v1/restaurants` | Cadastro do dono/restaurante |
-| PUT | `/api/v1/restaurants/{id}` | Atualização (sem senha) |
-| PATCH | `/api/v1/restaurants/{id}/change-password` | Troca de senha |
-| DELETE | `/api/v1/restaurants/{id}` | Exclusão |
-| GET | `/api/v1/restaurants/{id}/customers` | Clientes do restaurante |
-| POST | `/api/v1/restaurants/{id}/customers` | Cria cliente vinculado |
+| `GET` | `/api/v1/restaurants?restaurantName=` | Lista/busca por nome |
+| `POST` | `/api/v1/restaurants` | Cadastro do dono/restaurante |
+| `PUT` | `/api/v1/restaurants/{id}` | Atualização (**sem senha**) |
+| `PATCH` | `/api/v1/restaurants/{id}/change-password` | Troca de senha |
+| `DELETE` | `/api/v1/restaurants/{id}` | Exclusão |
+| `GET` | `/api/v1/restaurants/{id}/customers` | Clientes vinculados ao restaurante |
+| `POST` | `/api/v1/restaurants/{id}/customers` | Cria cliente já vinculado |
 
-#### Exemplo — criar restaurante
+#### Exemplo — criar restaurante (`POST /api/v1/restaurants`)
 
 ```json
 {
@@ -202,13 +240,14 @@ Senha atual incorreta: **400** (ProblemDetail).
 }
 ```
 
-Sucesso: **201 Created**.
+- **Sucesso:** `201 Created`.  
+- **Conflito de e-mail/login:** `409 Conflict` (ProblemDetail).
 
 ---
 
 ## 4. Documentação Swagger / OpenAPI
 
-A API usa **SpringDoc OpenAPI** (`springdoc-openapi-starter-webmvc-ui`).
+A API utiliza **SpringDoc OpenAPI** (`springdoc-openapi-starter-webmvc-ui`) para gerar a documentação interativa a partir das anotações nos controllers e DTOs.
 
 | Recurso | URL |
 |---|---|
@@ -217,62 +256,90 @@ A API usa **SpringDoc OpenAPI** (`springdoc-openapi-starter-webmvc-ui`).
 
 ### O que está documentado
 
-- Tags: **Auth**, **Customer**, **Restaurant**
+- Tags: **Auth**, **Customer** e **Restaurant**
 - Operações com `@Operation` e `@ApiResponses`
-- Exemplos de sucesso e erro (incluindo ProblemDetail para 400/401/409)
+- Exemplos de sucesso e de erro (incluindo ProblemDetail para 400, 401, 404 e 409)
 - Schemas dos DTOs com `@Schema` e exemplos de campos
-- Metadados em `OpenApiConfig` (título, descrição, versão `v1`)
+- Metadados em `OpenApiConfig` (título, descrição e versão `v1`)
 
-> No PDF final, incluir prints da UI Swagger (lista de endpoints e um exemplo de erro ProblemDetail).
+Com a aplicação em execução, a Swagger UI permite explorar os endpoints, visualizar contratos e enviar requisições de teste diretamente pelo navegador.
+
+> **[IMAGEM — Swagger UI: lista de endpoints]**  
+> Arquivo sugerido: `docs/imagens/swagger-lista-endpoints.png`  
+> *Inserir print da página inicial do Swagger com as tags Auth, Customer e Restaurant.*
+
+> **[IMAGEM — Swagger UI: detalhe de uma operação]**  
+> Arquivo sugerido: `docs/imagens/swagger-detalhe-operacao.png`  
+> *Inserir print de uma operação expandida (ex.: `POST /api/v1/customers` ou `POST /api/v1/auth/login`) com schema/exemplo.*
+
+> **[IMAGEM — Swagger UI: resposta de erro ProblemDetail]**  
+> Arquivo sugerido: `docs/imagens/swagger-erro-problemdetail.png`  
+> *Inserir print de exemplo de resposta de erro (400, 401 ou 409) no formato ProblemDetail.*
 
 ---
 
 ## 5. Coleção Postman
 
-**Arquivo:** `Restaurant API.postman_collection.json` (raiz do repositório).
+A coleção de testes está versionada na raiz do repositório:
 
-Importar no Postman e ajustar, se necessário:
+**Arquivo:** `Restaurant API.postman_collection.json`
 
-- `baseUrl` — padrão `http://localhost:8080`
-- `restaurantId` / `customerId` — IDs retornados após o cadastro
+### Como usar
 
-Pastas da coleção (alinhadas a `/api/v1`):
+1. Importar o JSON no Postman.  
+2. Ajustar as variáveis da coleção, se necessário:
+   - `baseUrl` — padrão `http://localhost:8080`
+   - `restaurantId` / `customerId` — IDs obtidos após o cadastro
+3. Executar os requests nas pastas **Auth**, **Restaurant** e **Customer**.
+
+### Cobertura da coleção
 
 | Pasta | Cobertura |
 |---|---|
-| **Auth** | `POST /auth/login` |
-| **Restaurant** | busca por nome, CRUD, change-password, customers do restaurante |
-| **Customer** | busca por nome/id, CRUD, change-password |
+| **Auth** | `POST /api/v1/auth/login` |
+| **Restaurant** | Busca por nome, CRUD, change-password, listagem e criação de customers do restaurante |
+| **Customer** | Busca por nome/ID, CRUD e change-password |
 
-Cenários do enunciado:
+### Cenários do enunciado
 
-1. Cadastro de usuário válido (cliente e dono)  
-2. Cadastro inválido — reutilizar POST de create com e-mail/login já existente (espera **409** ProblemDetail)  
-3. Alteração de senha — `PATCH .../change-password` (sucesso e senha atual incorreta → **400**)  
-4. Atualização de dados — `PUT` sem senha (sucesso e conflito de e-mail → **409**)  
-5. Busca por nome — query `customerName` / `restaurantName`  
-6. Validação de login — `POST /api/v1/auth/login`  
+1. **Cadastro válido** — `POST` de cliente e de restaurante/dono.  
+2. **Cadastro inválido** — reutilizar o mesmo `POST` com e-mail ou login já existente (espera **409** ProblemDetail).  
+3. **Alteração de senha** — `PATCH .../change-password` (sucesso e senha atual incorreta → **400**).  
+4. **Atualização de dados** — `PUT` sem senha (sucesso e conflito de e-mail → **409**).  
+5. **Busca por nome** — query `customerName` / `restaurantName`.  
+6. **Validação de login** — `POST /api/v1/auth/login`.
 
-> No PDF final, incluir prints da coleção (pastas + um request de sucesso e um de erro).
+> **[IMAGEM — Postman: visão das pastas da coleção]**  
+> Arquivo sugerido: `docs/imagens/postman-pastas.png`  
+> *Inserir print da coleção importada mostrando as pastas Auth, Restaurant e Customer.*
+
+> **[IMAGEM — Postman: request de sucesso]**  
+> Arquivo sugerido: `docs/imagens/postman-sucesso.png`  
+> *Inserir print de um request bem-sucedido (ex.: login 200 ou criação de cliente 201) com status e body.*
+
+> **[IMAGEM — Postman: request de erro]**  
+> Arquivo sugerido: `docs/imagens/postman-erro.png`  
+> *Inserir print de um cenário de erro (ex.: login inválido 401 ou e-mail duplicado 409) com ProblemDetail.*
 
 ---
 
 ## 6. Estrutura do banco de dados
 
-Script: `src/main/resources/schema-restaurant.sql`  
-Modo: `spring.sql.init.mode=always` / `ddl-auto=none`
+O schema é definido em `src/main/resources/schema-restaurant.sql` e aplicado na inicialização (`spring.sql.init.mode=always`), com `spring.jpa.hibernate.ddl-auto=none` para evitar conflito com o Hibernate.
 
-### Tabelas
+O banco utilizado é **PostgreSQL**, executado em container Docker conforme o `compose.yaml`.
+
+### 6.1 Tabelas
 
 | Tabela | Colunas principais |
 |---|---|
-| `address` | id, zip_code, street, number, city, state |
-| `user_account` | id, name, email (UNIQUE), login, password, updated_at, address_id |
-| `customer` | id, user_id (UNIQUE), cpf |
-| `restaurant` | id, user_id (UNIQUE), cnpj, cuisine_type |
-| `customer_restaurant` | customer_id, restaurant_id (PK composta) |
+| `address` | `id`, `zip_code`, `street`, `number`, `city`, `state` |
+| `user_account` | `id`, `name`, `email` (UNIQUE), `login`, `password`, `updated_at`, `address_id` |
+| `customer` | `id`, `user_id` (UNIQUE), `cpf` |
+| `restaurant` | `id`, `user_id` (UNIQUE), `cnpj`, `cuisine_type` |
+| `customer_restaurant` | `customer_id`, `restaurant_id` (PK composta) |
 
-### Relacionamentos (FKs)
+### 6.2 Relacionamentos (chaves estrangeiras)
 
 - `user_account.address_id` → `address.id`
 - `customer.user_id` → `user_account.id`
@@ -280,20 +347,24 @@ Modo: `spring.sql.init.mode=always` / `ddl-auto=none`
 - `customer_restaurant.customer_id` → `customer.id`
 - `customer_restaurant.restaurant_id` → `restaurant.id`
 
+> **[IMAGEM — DER / tabelas do banco (se distinto do diagrama da seção 2)]**  
+> Arquivo sugerido: `docs/imagens/der-banco.png`  
+> *Inserir print ou diagrama das tabelas físicas do PostgreSQL. Se o DER da seção 2 já cobrir este conteúdo, pode reutilizar a mesma imagem.*
+
 ---
 
 ## 7. Execução com Docker Compose
 
-Arquivo: `compose.yaml` (equivalente ao `docker-compose.yml` do enunciado).
+A aplicação e o banco sobem juntos por meio do arquivo `compose.yaml` (equivalente ao `docker-compose.yml` pedido no enunciado).
 
-### Serviços
+### 7.1 Serviços
 
 | Serviço | Função |
 |---|---|
-| `postgres` | Banco PostgreSQL (sempre disponível) |
+| `postgres` | Banco PostgreSQL (sempre disponível no Compose) |
 | `app` | API Spring Boot (profile Compose `full`) |
 
-### Passo a passo
+### 7.2 Passo a passo
 
 1. Clonar o repositório:
 
@@ -302,26 +373,30 @@ git clone git@github.com:BernardoSemiOficial/api-restaurante.git
 cd api-restaurante
 ```
 
-2. Subir aplicação + banco:
+2. Subir aplicação e banco:
 
 ```bash
 docker compose --profile full up --build
 ```
 
-3. Aguardar o healthcheck do Postgres e o start da API.
+3. Aguardar o healthcheck do Postgres e a inicialização da API.
 
 4. Validar:
 
-- Health/API: http://localhost:8080/swagger-ui/index.html  
-- Login de teste após cadastrar um usuário via `POST /api/v1/customers` ou `/restaurants`
+- Swagger UI: http://localhost:8080/swagger-ui/index.html  
+- Após cadastrar um usuário (`POST /api/v1/customers` ou `/api/v1/restaurants`), testar o login em `POST /api/v1/auth/login`.
 
-5. Parar:
+5. Parar os containers:
 
 ```bash
 docker compose --profile full down
 ```
 
-### Variáveis de ambiente da aplicação (Compose)
+> **[IMAGEM — Docker Compose em execução (opcional)]**  
+> Arquivo sugerido: `docs/imagens/docker-compose-up.png`  
+> *Inserir print do terminal após `docker compose --profile full up --build` com a API e o Postgres ativos.*
+
+### 7.3 Variáveis de ambiente da aplicação (Compose)
 
 ```text
 SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/restaurant
@@ -330,7 +405,7 @@ SPRING_DATASOURCE_PASSWORD=postgres
 SPRING_DOCKER_COMPOSE_ENABLED=false
 ```
 
-### Variáveis do Postgres
+### 7.4 Variáveis do Postgres
 
 ```text
 POSTGRES_DB=restaurant
@@ -338,39 +413,35 @@ POSTGRES_USER=postgres
 POSTGRES_PASSWORD=postgres
 ```
 
-Porta publicada no host: **5436** → 5432 no container.
+Porta publicada no host: **5436** → `5432` no container.
 
-### Dockerfile
+### 7.5 Dockerfile
 
-Build multi-stage:
+Build **multi-stage**:
 
-1. `eclipse-temurin:25-jdk` — compila com Maven Wrapper  
-2. `eclipse-temurin:25-jre` — executa o JAR `restaurant-0.0.1-SNAPSHOT.jar`
+1. Imagem `eclipse-temurin:25-jdk` — compila o projeto com Maven Wrapper.  
+2. Imagem `eclipse-temurin:25-jre` — executa o JAR `restaurant-0.0.1-SNAPSHOT.jar`.
 
 ---
 
 ## 8. Tratamento de erros (ProblemDetail)
 
-Handler: `GlobalExceptionHandler`
+Os erros da API são centralizados em `GlobalExceptionHandler` e devolvidos no padrão **ProblemDetail** (RFC 7807), com `Content-Type: application/problem+json`.
 
 | Status | Exceção típica | Situação |
 |---|---|---|
-| 404 | `EntityNotFoundException` | Recurso não encontrado |
-| 400 | `IllegalArgumentException` | Ex.: senha atual incorreta |
-| 401 | `UnauthorizedException` | Login/senha inválidos |
-| 409 | `DataIntegrityViolationException` | E-mail/login duplicado |
+| `404` | `EntityNotFoundException` | Recurso não encontrado |
+| `400` | `IllegalArgumentException` | Ex.: senha atual incorreta |
+| `401` | `UnauthorizedException` | Login ou senha inválidos |
+| `409` | `DataIntegrityViolationException` | E-mail ou login duplicado |
 
-Content-Type de erro: `application/problem+json`.
+Esse padrão garante respostas de erro consistentes para consumo via Postman, Swagger UI ou qualquer cliente HTTP.
 
 ---
 
-## 9. Próximos passos para o PDF oficial
+## Como finalizar o PDF
 
-Este arquivo Markdown é a base textual do relatório. Para o entregável em PDF:
-
-1. Exportar/converter este conteúdo para PDF  
-2. Incluir prints do Swagger UI  
-3. Incluir prints da coleção Postman (`Restaurant API.postman_collection.json`)  
-4. Opcional: diagrama de entidades (DER) em imagem  
-
-Entregável oficial: **PDF submetido separadamente**; código e este texto ficam no GitHub.
+1. Preencher os campos da **capa** (`[NOME]`, `[CURSO]`, etc.).  
+2. Capturar os prints e salvá-los em `docs/imagens/` com os nomes sugeridos (ou substituir os blocos `[IMAGEM — …]` pelas figuras no editor de exportação).  
+3. Exportar este arquivo para **PDF** (Pandoc, Word, Google Docs ou ferramenta equivalente).  
+4. Submeter o PDF como entregável oficial; o código permanece no GitHub.

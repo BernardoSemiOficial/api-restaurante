@@ -1,8 +1,5 @@
 # Relatório Técnico — Restaurant API
 
-> Rascunho do entregável oficial em **PDF**.  
-> Preencher a capa e exportar este Markdown para PDF. As imagens estão em `docs/imagens/`.
-
 ---
 
 ## Capa / identificação
@@ -439,10 +436,3 @@ Os erros da API são centralizados em `GlobalExceptionHandler` e devolvidos no p
 | `409` | `DataIntegrityViolationException` | E-mail ou login duplicado |
 
 Esse padrão garante respostas de erro consistentes para consumo via Postman, Swagger UI ou qualquer cliente HTTP.
-
----
-
-## Como finalizar o PDF
-
-1. Exportar este arquivo para **PDF** (Pandoc, Word, Google Docs ou ferramenta equivalente), garantindo que as figuras de `docs/imagens/` sejam incluídas.  
-2. Submeter o PDF como entregável oficial; o código permanece no GitHub.

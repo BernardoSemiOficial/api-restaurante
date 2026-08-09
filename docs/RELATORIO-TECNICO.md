@@ -229,20 +229,31 @@ A API usa **SpringDoc OpenAPI** (`springdoc-openapi-starter-webmvc-ui`).
 
 ## 5. Coleção Postman
 
-**Status:** ainda não incluída no repositório.
+**Arquivo:** `Restaurant API.postman_collection.json` (raiz do repositório).
 
-Cenários previstos (conforme enunciado):
+Importar no Postman e ajustar, se necessário:
 
-1. Cadastro de usuário válido  
-2. Cadastro inválido (e-mail duplicado / campos faltando)  
-3. Alteração de senha (sucesso e erro)  
-4. Atualização de dados (sucesso e erro)  
-5. Busca por nome  
-6. Validação de login  
+- `baseUrl` — padrão `http://localhost:8080`
+- `restaurantId` / `customerId` — IDs retornados após o cadastro
 
-> Quando a coleção JSON for adicionada, referenciar o arquivo aqui e incluir prints no PDF.
+Pastas da coleção (alinhadas a `/api/v1`):
 
-Enquanto isso, os mesmos cenários podem ser exercitados via **Swagger UI** ou curl.
+| Pasta | Cobertura |
+|---|---|
+| **Auth** | `POST /auth/login` |
+| **Restaurant** | busca por nome, CRUD, change-password, customers do restaurante |
+| **Customer** | busca por nome/id, CRUD, change-password |
+
+Cenários do enunciado:
+
+1. Cadastro de usuário válido (cliente e dono)  
+2. Cadastro inválido — reutilizar POST de create com e-mail/login já existente (espera **409** ProblemDetail)  
+3. Alteração de senha — `PATCH .../change-password` (sucesso e senha atual incorreta → **400**)  
+4. Atualização de dados — `PUT` sem senha (sucesso e conflito de e-mail → **409**)  
+5. Busca por nome — query `customerName` / `restaurantName`  
+6. Validação de login — `POST /api/v1/auth/login`  
+
+> No PDF final, incluir prints da coleção (pastas + um request de sucesso e um de erro).
 
 ---
 
@@ -359,7 +370,7 @@ Este arquivo Markdown é a base textual do relatório. Para o entregável em PDF
 
 1. Exportar/converter este conteúdo para PDF  
 2. Incluir prints do Swagger UI  
-3. Incluir prints da coleção Postman (após criar o JSON)  
+3. Incluir prints da coleção Postman (`Restaurant API.postman_collection.json`)  
 4. Opcional: diagrama de entidades (DER) em imagem  
 
 Entregável oficial: **PDF submetido separadamente**; código e este texto ficam no GitHub.

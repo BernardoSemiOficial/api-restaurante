@@ -96,9 +96,10 @@ Documentação interativa: **Swagger UI** em `/swagger-ui/index.html`.
 |---|---|
 | [docs/RELATORIO-TECNICO.md](docs/RELATORIO-TECNICO.md) | Relatório técnico em texto (base para o PDF) |
 | [PENDENCIAS.md](PENDENCIAS.md) | Checklist de entregáveis e critérios |
+| [Restaurant API.postman_collection.json](Restaurant%20API.postman_collection.json) | Coleção Postman (`/api/v1`) |
 | [HELP.md](HELP.md) | Notas do Spring Initializr |
 
-> A coleção Postman em JSON ainda será adicionada em breve.
+Importe o JSON no Postman e use a variável `baseUrl` (`http://localhost:8080`).
 
 ---
 

@@ -24,6 +24,7 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 - [x] Documentação Swagger/OpenAPI (SpringDoc): UI em `/swagger-ui/index.html`, controllers e DTOs com exemplos de sucesso/erro
 - [x] README do repositório
 - [x] Relatório técnico em texto (`docs/RELATORIO-TECNICO.md`) — base para o PDF
+- [x] Coleção Postman em JSON (`Restaurant API.postman_collection.json`) alinhada a `/api/v1`
 
 ---
 
@@ -33,7 +34,7 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Critério | Status |
 |---|---|
-| Backend atende aos requisitos especificados | [x] Em grande parte — faltam Postman e PDF oficial |
+| Backend atende aos requisitos especificados | [x] Completo no código; falta PDF oficial da entrega |
 | Endpoints funcionam com tratamento de erros adequado | [x] `GlobalExceptionHandler` + `ProblemDetail` |
 | Estratégia de versionamento de API | [x] Path `/api/v1/...` |
 | Padrão ProblemDetail (RFC 7807) | [x] |
@@ -85,16 +86,18 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Critério | Status |
 |---|---|
-| Coleção Postman em JSON no repositório | [ ] **Pendente** |
+| Coleção Postman em JSON no repositório | [x] `Restaurant API.postman_collection.json` |
 
-#### Cenários obrigatórios na coleção
+#### Cenários na coleção
 
-- [ ] Cadastro de usuário válido (cliente e/ou dono)
-- [ ] Tentativa de cadastro inválido (e-mail duplicado, campos obrigatórios faltando)
-- [ ] Alteração de senha com sucesso e erro (endpoint exclusivo)
-- [ ] Atualização de dados do usuário com sucesso e erro (endpoint distinto)
-- [ ] Busca de usuários pelo nome
-- [ ] Validação de login (obrigatória)
+- [x] Cadastro de usuário válido (cliente e dono)
+- [x] Alteração de senha (endpoint exclusivo — cliente e dono)
+- [x] Atualização de dados do usuário (endpoint distinto — cliente e dono)
+- [x] Busca de usuários pelo nome (cliente e restaurante)
+- [x] Validação de login
+- [x] CRUD restante alinhado à API (`DELETE`, listagem de customers do restaurante, etc.)
+
+> Cenários de **erro** (e-mail duplicado, senha atual incorreta, login inválido) usam os mesmos requests da coleção com body/credenciais inválidos; respostas documentadas via ProblemDetail no Swagger e no relatório.
 
 ### 6. Relatório Técnico (ÚNICO ENTREGÁVEL OFICIAL)
 
@@ -107,7 +110,7 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 | Modelagem das entidades e relacionamentos | [x] Em texto no relatório |
 | Descrição dos endpoints (com exemplos de uso) | [x] Em texto no relatório |
 | Descrição da documentação Swagger (prints ou trechos) | [~] Trechos ok; faltam prints no PDF |
-| Descrição da coleção Postman (prints e exemplos) | [ ] **Pendente** (depende do item 5) |
+| Descrição da coleção Postman (prints e exemplos) | [~] Arquivo JSON no repo; faltam prints no PDF |
 | Estrutura do banco de dados (tabelas) | [x] Em texto no relatório |
 | Passo a passo para executar com Docker Compose (env + exemplos) | [x] Em texto no relatório + README |
 
@@ -126,11 +129,11 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Critério | Status |
 |---|---|
-| Repositório GitHub/GitLab aberto | [ ] Confirmar publicação / visibilidade |
+| Repositório GitHub/GitLab aberto | [x] https://github.com/BernardoSemiOficial/api-restaurante |
 | Código-fonte no repositório | [x] |
 | README | [x] `README.md` |
 | Documentação Swagger no projeto | [x] SpringDoc + UI em `/swagger-ui/index.html` |
-| Coleção JSON do Postman no projeto | [ ] **Pendente** (item 5) |
+| Coleção JSON do Postman no projeto | [x] `Restaurant API.postman_collection.json` |
 | Relatório PDF submetido separadamente | [~] Base em texto pronta (`docs/RELATORIO-TECNICO.md`); PDF ainda não gerado |
 
 ---
@@ -144,9 +147,9 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 ## Ordem sugerida para fechar a entrega
 
-1. **Coleção Postman JSON** (item 5) — cobrir os cenários obrigatórios
-2. Incluir prints Swagger/Postman no relatório e **exportar PDF** (item 6)
-3. Publicar/abrir o repositório e submeter o PDF
+1. Incluir prints Swagger/Postman no relatório e **exportar PDF** (item 6)
+2. Submeter o PDF (entregável oficial)
+3. (Opcional) ampliar testes automatizados / limpeza de código
 
 ---
 
@@ -154,11 +157,11 @@ Objetivo: checklist do que já foi feito e do que ainda falta para a entrega.
 
 | Área | Situação |
 |---|---|
-| 1. Funcionalidade | Praticamente completa |
+| 1. Funcionalidade | Completa |
 | 2. Qualidade do código | Parcial (testes opcionais) |
 | 3. Swagger | Completo |
 | 4. Banco de dados | Completo |
-| 5. Postman | **Falta** |
-| 6. Relatório | Texto pronto; **PDF** pendente |
+| 5. Postman | Completo (JSON no repo) |
+| 6. Relatório | Texto pronto; **PDF** + prints pendentes |
 | 7. Docker Compose (app + banco) | Completo |
-| 8. Repositório | README ok; falta Postman |
+| 8. Repositório | Público — https://github.com/BernardoSemiOficial/api-restaurante |
